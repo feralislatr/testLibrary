@@ -34,12 +34,23 @@ stage('Initialize') {
       }
     }
 
-    node() {
-        unstash env.BUILD_TAG
+      node() {
+        // Get all the files
+        unstash BUILD_TAG
+        // do syntax check
+        stage('Syntax Check') {
+          utils.syntax_check()
+        }
 
-        utils.syntax_check(ghcert, common)
-        utils.build(ghcert,repo_name, git_sha, dockerhub, dockeruser, dockercert)
-        utils.unit_tests(ghcert, repo_name, git_sha, dockeruser, common)
+        //build image
+        stage('Build Image') {
+          img = utils.build()
+        }
+        // do unit tests
+        stage('Unit Tests') {
+          utils.unit_tests(img)
+        }
+
       }
 
 

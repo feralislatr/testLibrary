@@ -9,7 +9,6 @@ def initialize() {
     // Put github related stuff in variables
     def tokens = "$JOB_NAME".tokenize('/')
 
-    env.ORG_NAME  = tokens[0]
     env.REPO_NAME = tokens[1].toLowerCase()
 
     // Get the git commit hash by running a shell command and returning stdout

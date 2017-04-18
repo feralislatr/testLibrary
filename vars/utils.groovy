@@ -1,7 +1,5 @@
 // vars/utils.groovy
 
-
-
 // sets some useful environment variables and make sure all necessary files are present
 def initialize() {
 
@@ -9,12 +7,11 @@ def initialize() {
     // Put github related stuff in variables
     def tokens = "$JOB_NAME".tokenize('/')
 
+    env.ORG_NAME  = tokens[0]
     env.REPO_NAME = tokens[1].toLowerCase()
 
     // Get the git commit hash by running a shell command and returning stdout
     env.GIT_SHA = sh( script: 'git rev-parse HEAD', returnStdout: true ).trim()
-
-    }
 
 
     // if this is a nodejs project
@@ -50,7 +47,6 @@ def initialize() {
 // Run Syntax Check
 def syntax_check(){
 
-
   def exit_code = sh (
     script: SYNTAX_COMMAND,
     returnStatus: true
@@ -64,7 +60,6 @@ def syntax_check(){
 
   if (exit_code != 0) {
     echo "Syntax Check Returned Errors"
-    github.setCommitStatus("Syntax Check", "Syntax Check Returned Errors", "FAILURE")
     throw new Exception("Syntax Check Returned Errors")
   } else{
     echo "Syntax Check Completed Successfully"
@@ -79,10 +74,9 @@ def build() {
   try {
     //withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: config.dockerhubCert, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
       //Define image for running CI tests
-      //testImg = docker.build("$config.dockerhubUrl/$USERNAME/$REPO_NAME:$GIT_SHA")
       testImg = docker.build("$REPO_NAME:$GIT_SHA")
       sh "docker images | grep $GIT_SHA"
-   // }
+    //}
   } catch (err) {
     echo "Image failed to build"
     throw new Exception("Image failed to build")
@@ -128,4 +122,3 @@ void removeImages(String image_id) {
   // Don't output an error so people don't get confused
   sh "docker rmi -f $image_id 2> /dev/null || echo 'image already deleted'"
 }
-

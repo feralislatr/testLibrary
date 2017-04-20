@@ -18,7 +18,7 @@ def initialize() {
     if (fileExists('package.json')) {
       env.PROJ_TYPE = "Node"
       // Syntax check command for nodejs
-      env.SYNTAX_COMMAND = "sudo docker run -u 501 --name $BUILD_TAG-syntax -v \$(pwd):/app -w /app node:argon /bin/bash -c \'walk() { cd \"\$1\"; for file in *; do if [ -d \"\$file\" ] && [ \"\$file\" != \"node_modules\" ]; then walk \"\$1/\$file\"; else if [[ ${file: -3} == \".js\" ]]; then node -c \"\$file\"; fi; fi; cd \"\$1\"; done; }; walk `pwd`\'"
+      env.SYNTAX_COMMAND = "docker run --name $BUILD_TAG-syntax -v \$(pwd):/app -w /app node:argon /bin/bash -c \'walk() { cd \"\$1\"; for file in *; do if [ -d \"\$file\" ] && [ \"\$file\" != \"node_modules\" ]; then walk \"\$1/\$file\"; else if [[ ${file: -3} == \".js\" ]]; then node -c \"\$file\"; fi; fi; cd \"\$1\"; done; }; walk `pwd`\'"
       // Unit test command for nodejs
       env.UNIT_COMMAND   = "npm test"
     // if this is a java project
